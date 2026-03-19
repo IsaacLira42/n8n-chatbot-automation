@@ -1,5 +1,5 @@
 {
-  "name": "Teste Prático V2 – Estagiário de automação (n8n)",
+  "name": "n8n-chatbot-automation",
   "nodes": [
     {
       "parameters": {
@@ -138,22 +138,6 @@
     },
     {
       "parameters": {
-        "content": "# Teste Prático – Estagiário de automação (n8n)",
-        "height": 80,
-        "width": 784,
-        "color": 7
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        0,
-        0
-      ],
-      "id": "e719c9e7-4bc6-4c16-add6-67f72e6237dd",
-      "name": "Sticky Note4"
-    },
-    {
-      "parameters": {
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
@@ -167,7 +151,7 @@
       "credentials": {
         "googlePalmApi": {
           "id": "2zqaodDcuQCjwSQ5",
-          "name": "API Gemini - isaaclira808@gmail.com"
+          "name": "API Gemini - liraisaac422@gmail.com"
         }
       }
     },
@@ -186,7 +170,7 @@
       "credentials": {
         "googlePalmApi": {
           "id": "2zqaodDcuQCjwSQ5",
-          "name": "API Gemini - isaaclira808@gmail.com"
+          "name": "API Gemini - liraisaac422@gmail.com"
         }
       }
     },
@@ -205,7 +189,7 @@
       "credentials": {
         "googlePalmApi": {
           "id": "2zqaodDcuQCjwSQ5",
-          "name": "API Gemini - isaaclira808@gmail.com"
+          "name": "API Gemini - liraisaac422@gmail.com"
         }
       }
     },
@@ -224,7 +208,7 @@
       "credentials": {
         "googlePalmApi": {
           "id": "2zqaodDcuQCjwSQ5",
-          "name": "API Gemini - isaaclira808@gmail.com"
+          "name": "API Gemini - liraisaac422@gmail.com"
         }
       }
     },
@@ -243,7 +227,7 @@
       "credentials": {
         "googlePalmApi": {
           "id": "2zqaodDcuQCjwSQ5",
-          "name": "API Gemini - isaaclira808@gmail.com"
+          "name": "API Gemini - liraisaac422@gmail.com"
         }
       }
     },
@@ -621,7 +605,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "6944c9e1-48c8-4664-ba73-afa166fd8808",
+  "versionId": "ab7176f0-77e5-4493-a7a3-f464b07176e4",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "6e10775aba575d41b37dfbf90d59ede5e9291db982ebebd2aa2f1a2576197638"
