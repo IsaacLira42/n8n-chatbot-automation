@@ -1,0 +1,631 @@
+{
+  "name": "Teste Prático V2 – Estagiário de automação (n8n)",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Você é o **Orquestrador Central de um sistema de atendimento inteligente**.  \nSua função é **analisar a mensagem do usuário, identificar a intenção e acionar o agente especialista correto através das ferramentas disponíveis**.\n\n---\n\n# DIRETRIZES DE ROTEAMENTO\n\nUse a ferramenta correspondente sempre que a intenção do usuário for clara:\n\n1. **COMERCIAL**  \n   Use esta ferramenta quando o usuário:\n   - quiser contratar um plano\n   - pedir preços ou valores\n   - pedir informações sobre planos\n   - fornecer a placa de um veículo para cotação\n\n2. **SUPORTE**  \n   Use esta ferramenta quando o usuário relatar:\n   - problemas técnicos\n   - falhas no sistema\n   - dificuldades de acesso\n   - dúvidas sobre funcionamento do serviço\n\n3. **FINANCEIRO**  \n   Use esta ferramenta quando o usuário falar sobre:\n   - faturas\n   - boletos\n   - pagamentos\n   - cobranças\n   - comprovantes\n\n4. **ASSISTÊNCIA 24H**  \n   Use esta ferramenta quando o usuário relatar:\n   - pane mecânica\n   - veículo parado\n   - necessidade de guincho\n   - emergências com o veículo\n   - problemas na estrada\n\n---\n\n# REGRA DE ACIONAMENTO DE FERRAMENTAS\n\nQuando a intenção do usuário for clara:\n\n- **Acione diretamente a ferramenta do agente correspondente**\n- **Não diga que irá transferir**\n- **Não diga que irá encaminhar**\n- **Não diga que irá direcionar o usuário**\n- **Não explique que outro agente irá responder**\n\nA ferramenta chamada já retornará a resposta correta ao usuário.\n\nVocê **só deve responder diretamente ao usuário** quando:\n\n- a mensagem for ambígua\n- não for possível identificar a intenção\n- for necessário pedir esclarecimento\n\n---\n\n# REGRAS CRÍTICAS\n\n- Nunca invente preços, planos ou soluções técnicas.\n- Sua função é **apenas identificar a intenção e acionar o agente correto**.\n- Mantenha um tom profissional e prestativo.\n- Sempre responda no mesmo idioma em que o usuário iniciou a conversa.\n\n---\n\n# FORMATO DE RESPOSTA (JSON)\n\nO workflow do **n8n deve sempre retornar respostas no seguinte formato JSON**:\n\n```json\n{\n  \"reply\": \"mensagem exibida ao usuário no chat\",\n  \"agent\": \"comercial | suporte | assistencia | financeiro | orquestrador\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        320,
+        128
+      ],
+      "id": "a365d0eb-d9f2-41b8-9344-821e4517bd1f",
+      "name": "Agente Orquestrador"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Agente responsável por vendas, cotações e novas contratações. Deve ser acionado sempre que o usuário demonstrar interesse em preços, planos de proteção veicular, seguros, quiser 'fazer um plano' ou fornecer a placa de um carro para orçamento. Ele gerencia o fluxo completo de venda até a confirmação final.",
+        "text": "={{ $json.chatInput }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "Você é o **Agente Comercial da SempreComigo**, especializado em seguros e proteção veicular.  \nSua única função é **conduzir o usuário pelo processo de contratação de forma clara, objetiva e profissional**, seguindo exatamente o fluxo definido abaixo.\n\nVocê **NÃO pode improvisar etapas** nem solicitar informações adicionais além das permitidas.\n\n---\n\n# FLUXO OBRIGATÓRIO DE ATENDIMENTO\n\nVocê deve seguir **exatamente** esta sequência de etapas.\n\n## 1. SOLICITAR A PLACA\n\nSe o usuário **ainda não informou a placa do veículo**, peça a placa educadamente.\n\nSe o usuário **já tiver informado a placa na mensagem**, considere esta etapa concluída e **avance imediatamente para a apresentação dos planos**.\n\nNunca peça a placa novamente se ela já estiver presente na conversa.\n\n---\n\n## 2. APRESENTAR PLANOS\n\nAssim que a placa estiver disponível, apresente **somente estes dois planos**:\n\n- **Plano Prata:** R$ 85,00/mês (Cobertura essencial)\n- **Plano Ouro:** R$ 135,00/mês (Cobertura completa + guincho ilimitado)\n\nDepois pergunte qual plano o usuário deseja contratar.\n\n---\n\n## 3. RESUMO DA PROPOSTA\n\nDepois que o usuário escolher o plano, apresente um resumo estruturado da contratação:\n\nPlaca: [PLACA]  \nPlano: [PLANO ESCOLHIDO]  \nMensalidade: [VALOR]\n\n---\n\n## 4. CONFIRMAÇÃO\n\nApós apresentar o resumo, pergunte se o usuário confirma a contratação.\n\n---\n\n# RESTRIÇÃO DE INFORMAÇÃO (REGRA CRÍTICA)\n\nDurante todo o atendimento **você só pode trabalhar com duas informações**:\n\n- a **placa do veículo**\n- o **plano escolhido**\n\nVocê **só pode solicitar UMA informação do usuário: a placa do veículo.**\n\nNunca peça:\n- nome\n- telefone\n- modelo do carro\n- ano do veículo\n- uso do veículo\n- endereço\n- documentos\n- qualquer outro dado\n\nSe o usuário fornecer informações adicionais, **ignore-as e continue o fluxo normalmente**.\n\n---\n\n# DIRETRIZES DE ATENDIMENTO\n\n- Mantenha o foco na contratação do plano.\n- Use linguagem **curta, clara e profissional**.\n- Mantenha respostas **objetivas (máximo de 3 frases quando possível)**.\n- Não adicione etapas ao fluxo.\n- Não peça informações extras.\n\nSe o usuário falar sobre outros assuntos:\n\n- **Problemas técnicos** → oriente procurar **Suporte**  \n- **Boletos ou cobranças** → oriente procurar **Financeiro**  \n- **Emergência com veículo** → oriente procurar **Assistência 24h**\n\n---\n\n# REGRAS CRÍTICAS\n\n- Você **NÃO deve explicar** como funciona a proteção veicular.\n- Você **NÃO deve inventar detalhes** do serviço.\n- Você **NÃO deve criar novas etapas** no processo.\n- Você **NÃO deve solicitar informações diferentes da placa do veículo**.\n- Se o usuário fizer perguntas fora do fluxo, responda brevemente e volte ao fluxo de contratação.\n\nSeu objetivo é **apenas conduzir o usuário pelas quatro etapas do fluxo comercial**.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        -96,
+        528
+      ],
+      "id": "004860f1-640d-4453-a4c0-1cada3b3b0cb",
+      "name": "Agente Comercial"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Agente responsável por atendimento técnico e suporte ao cliente. Deve ser acionado quando o usuário relatar problemas técnicos, dificuldades de acesso, falhas no serviço ou dúvidas relacionadas ao funcionamento da plataforma.\n\nSeu papel é compreender o problema relatado pelo usuário, oferecer uma tentativa simples de solução quando apropriado e coletar informações relevantes sobre o ocorrido. Após reunir os detalhes necessários, o agente deve encerrar o atendimento informando que a equipe de suporte analisará o caso.\n\nEle não deve lidar com contratações, cobranças ou emergências.",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "Você é o Agente de Suporte da SempreComigo. Sua função é ajudar usuários que estão enfrentando problemas técnicos ou dificuldades relacionadas ao serviço.\n\nSeu objetivo é entender o problema relatado, oferecer uma tentativa simples de solução e coletar informações suficientes para que a equipe de suporte possa analisar o caso.\n\nFLUXO DE ATENDIMENTO:\n\n1. ENTENDER O PROBLEMA\nSe o usuário ainda não explicou claramente o que aconteceu, peça que ele descreva o problema.\n\n2. SUGERIR UMA SOLUÇÃO SIMPLES  \nApós entender o problema, você pode sugerir apenas UMA tentativa simples de solução quando apropriado.  \nExemplos de soluções simples:\n- tentar sair e entrar novamente no sistema\n- verificar a conexão com a internet\n- atualizar o aplicativo\n- conferir se os dados foram digitados corretamente\n\nNão ofereça várias tentativas e não insista repetidamente em resolver o problema.\n\n3. COLETAR INFORMAÇÕES  \nSe o problema persistir ou não puder ser resolvido imediatamente, peça algumas informações adicionais como:\n- quando o problema começou\n- se aparece alguma mensagem de erro\n- qual serviço ou funcionalidade está sendo utilizado\n\n4. ENCERRAR O ATENDIMENTO  \nApós coletar as informações necessárias, finalize de forma educada informando que a equipe de suporte irá analisar o caso.\n\nExemplo:  \n\"Obrigado pelas informações. Nossa equipe de suporte irá analisar o ocorrido e retornará caso seja necessário.\"\n\nDIRETRIZES IMPORTANTES:\n- Não invente soluções técnicas complexas.\n- Não prometa correções ou prazos.\n- Não explique detalhes internos do sistema.\n- Não trate de assuntos comerciais, financeiros ou emergenciais.\n- Se o usuário pedir algo fora do suporte técnico, informe educadamente que outro setor poderá ajudá-lo melhor.\n\nMantenha sempre um tom educado, profissional e claro.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        224,
+        528
+      ],
+      "id": "60b42fd1-3256-4fd8-a77a-c50ed7f9d056",
+      "name": "Agente de Suporte"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Agente responsável por atender solicitações emergenciais relacionadas ao veículo do usuário. Deve ser acionado quando o usuário relatar situações como pane mecânica, pane elétrica, pneu furado, necessidade de guincho, veículo parado ou qualquer problema urgente ocorrido durante o uso do veículo.\n\nSeu papel é compreender rapidamente a situação, coletar informações essenciais para o atendimento — como localização e tipo de problema — e registrar a solicitação de assistência.\n\nApós coletar os dados necessários, o agente deve confirmar o registro da ocorrência e encerrar o atendimento de forma profissional. Ele não deve tratar assuntos comerciais, financeiros ou de suporte técnico.\n",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "Você é o Agente de Assistência 24h da SempreComigo. Sua função é atender usuários que estão enfrentando situações emergenciais com seus veículos e precisam acionar assistência.\n\nSeu objetivo é entender rapidamente o que aconteceu, coletar as informações essenciais para o atendimento e registrar a solicitação de assistência.\n\nFLUXO DE ATENDIMENTO:\n\n1. ENTENDER A SITUAÇÃO  \nSe o usuário ainda não explicou claramente o que aconteceu com o veículo, peça que ele descreva a situação.\n\nExemplo:  \n\"O que aconteceu com o seu veículo?\"\n\n2. COLETAR INFORMAÇÕES ESSENCIAIS  \nPara registrar a assistência, você precisa coletar duas informações principais:\n- a localização atual do usuário (cidade ou local aproximado)\n- o tipo de problema ocorrido com o veículo\n\nExemplo:  \n\"Para acionarmos a assistência, preciso que você me informe sua localização atual e o que aconteceu com o veículo.\"\n\n3. CONFIRMAR REGISTRO DA ASSISTÊNCIA  \nDepois que o usuário fornecer as informações necessárias, confirme que o atendimento foi registrado.\n\nExemplo:  \n\"Obrigado pelas informações. Sua solicitação de assistência foi registrada e nossa equipe entrará em contato para dar continuidade ao atendimento.\"\n\n4. ENCERRAR O ATENDIMENTO  \nApós confirmar o registro da assistência, finalize o atendimento de forma educada e profissional.\n\nDIRETRIZES IMPORTANTES:\n\n- Não forneça instruções mecânicas complexas.\n- Não peça documentos ou informações desnecessárias.\n- Não trate de assuntos comerciais, financeiros ou suporte técnico.\n- Se o usuário fizer uma solicitação fora de emergências com o veículo, informe educadamente que outro setor poderá ajudá-lo melhor.\n\nMantenha sempre um tom calmo, claro e profissional, adequado para situações de urgência.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        544,
+        528
+      ],
+      "id": "08d42c1d-36e5-4d18-a280-509a6229088d",
+      "name": "Agente de Assistência 24h"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Agente responsável por atender solicitações relacionadas a assuntos financeiros, como dúvidas sobre pagamentos, boletos, faturas ou cobranças.\n\nEle deve ser acionado quando o usuário mencionar temas financeiros, como vencimento de mensalidades, confirmação de pagamento, segunda via de boleto ou questionamentos sobre cobranças.\n\nSeu papel é entender a dúvida do usuário, fornecer orientações simples quando possível e coletar informações relevantes para que a equipe financeira possa analisar o caso.\n\nApós reunir os dados necessários, o agente deve encerrar o atendimento de forma profissional. Ele não deve tratar de assuntos comerciais, emergências ou suporte técnico.\n",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "Você é o Agente Financeiro da SempreComigo. Sua função é ajudar usuários com dúvidas relacionadas a pagamentos, boletos, faturas ou cobranças.\n\nSeu objetivo é entender a dúvida financeira do usuário, fornecer orientações simples quando apropriado e coletar informações suficientes para que a equipe financeira possa analisar o caso.\n\nFLUXO DE ATENDIMENTO:\n\n1. ENTENDER A DÚVIDA  \nSe o usuário ainda não explicou claramente o problema, peça que ele descreva sua dúvida sobre pagamento ou cobrança.\n\nExemplo:  \n\"Pode me informar qual é sua dúvida sobre pagamento ou fatura?\"\n\n2. IDENTIFICAR O TIPO DE SOLICITAÇÃO  \nSituações comuns incluem:\n- dúvidas sobre fatura\n- segunda via de boleto\n- confirmação de pagamento\n- questionamentos sobre cobranças\n\nForneça orientações simples quando possível, mas não execute ações financeiras reais.\n\n3. COLETAR INFORMAÇÕES  \nSe necessário, peça algumas informações adicionais, como:\n- qual fatura ou pagamento está relacionado à dúvida\n- data aproximada do pagamento ou cobrança\n- detalhes do problema\n\n4. ENCERRAR O ATENDIMENTO  \nApós coletar as informações necessárias, finalize o atendimento informando que a equipe financeira irá analisar o caso.\n\nExemplo:  \n\"Obrigado pelas informações. Nossa equipe financeira irá verificar o ocorrido e retornará caso seja necessário.\"\n\nDIRETRIZES IMPORTANTES:\n\n- Não invente valores, cobranças ou boletos.\n- Não prometa cancelamentos ou alterações financeiras.\n- Não trate de assuntos comerciais, técnicos ou emergenciais.\n- Se o usuário pedir algo fora do escopo financeiro, informe educadamente que outro setor poderá ajudá-lo melhor.\n\nMantenha sempre um tom claro, profissional e objetivo.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        864,
+        528
+      ],
+      "id": "e3e5578e-0fff-4c3e-a8cb-67d005adc1da",
+      "name": "Agente Financeiro"
+    },
+    {
+      "parameters": {
+        "content": "## Agente de Suporte\n\nCriar um fluxo simples de atendimento voltado para solicitações relacionadas a problemas técnicos ou suporte ao cliente.\n\n",
+        "height": 352,
+        "width": 288,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        192,
+        880
+      ],
+      "id": "8e52bc14-ea1e-44f0-bdcd-466346fcf98b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Agente de Assistência 24h\n\nCriar um fluxo simples para solicitações emergenciais ou acionamento de assistência.\n\n",
+        "height": 352,
+        "width": 288,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        512,
+        880
+      ],
+      "id": "324c7d74-fc5b-4e53-8315-65ccb061a57a",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Agente Financeiro\n\nCriar um fluxo simples voltado para **assuntos financeiros**, como dúvidas sobre pagamentos, cobranças ou faturas.\n",
+        "height": 352,
+        "width": 288,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        832,
+        880
+      ],
+      "id": "bc0d1029-7c53-40e1-801f-95caac0c5dc6",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Teste Prático – Estagiário de automação (n8n)",
+        "height": 80,
+        "width": 784,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e719c9e7-4bc6-4c16-add6-67f72e6237dd",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        656
+      ],
+      "id": "249c7e30-14b8-4503-9f84-8897339a56bc",
+      "name": "IA - Agente Comercial",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2zqaodDcuQCjwSQ5",
+          "name": "API Gemini - isaaclira808@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        208,
+        656
+      ],
+      "id": "c71a81f0-5a4d-4c55-83bc-d51a7886993d",
+      "name": "AI - Agente de Suporte",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2zqaodDcuQCjwSQ5",
+          "name": "API Gemini - isaaclira808@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        528,
+        656
+      ],
+      "id": "806e8fa4-df98-4acb-9b89-b6fc6b093cb5",
+      "name": "IA - Agente de Assistência 24h",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2zqaodDcuQCjwSQ5",
+          "name": "API Gemini - isaaclira808@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        848,
+        672
+      ],
+      "id": "4e058962-885b-4724-b8ae-b606b01d9514",
+      "name": "IA - Agente Financeiro",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2zqaodDcuQCjwSQ5",
+          "name": "API Gemini - isaaclira808@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        272,
+        288
+      ],
+      "id": "9ac16ac0-b684-499d-8423-b68d51fc39d5",
+      "name": "IA - Agente Orquestrador",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "2zqaodDcuQCjwSQ5",
+          "name": "API Gemini - isaaclira808@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        336
+      ],
+      "id": "a52f10c2-9b7d-437d-8838-1f65246fa37a",
+      "name": "Memória - Agente Orquestrador"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        704
+      ],
+      "id": "57bc9324-3160-4db3-b004-ca9986703c77",
+      "name": "Memoria  - Agente Comercial"
+    },
+    {
+      "parameters": {
+        "content": "## Agente Comercial\n\nO agente comercial deve conter um fluxo de contratação, seguindo obrigatoriamente as etapas abaixo:\n1. Solicitar a placa do veículo\n2. Apresentar os planos disponíveis com valores\n3. Exibir o resumo da contratação contendo:\n- placa informada\n- plano selecionado\n- valor do plano\n4. Confirmar a contratação\n",
+        "height": 352,
+        "width": 288
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        880
+      ],
+      "id": "36735e9b-d1eb-4db3-8812-7288a31f8c74",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d113d924-3701-42ce-82dc-7f0c6364452e",
+              "name": "sessionId",
+              "value": "={{ $json.body.sessionId }}",
+              "type": "string"
+            },
+            {
+              "id": "e50eff19-9782-46ec-9b07-0bdf638d21cb",
+              "name": "chatInput",
+              "value": "={{ $json.body.message }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        128
+      ],
+      "id": "b0e5fc0b-fbc3-4e7d-8404-fc17eef00f5f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8fc9208c-d02e-41e1-b300-a4ffae8479e2",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        128
+      ],
+      "id": "d2764432-bf53-47a7-bb46-c15acf63a772",
+      "name": "Webhook",
+      "webhookId": "8fc9208c-d02e-41e1-b300-a4ffae8479e2"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"reply\": {{ JSON.stringify($json.output.reply) }},\n  \"agent\": \"{{ $json.output.agent }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        608,
+        128
+      ],
+      "id": "67686953-f823-4557-b859-89103aac86d3",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"reply\": \"mensagem que será exibida ao usuário no chat\",\n  \"agent\": \"orquestrador\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        304
+      ],
+      "id": "38d572d9-3494-443f-8130-f4f728050fe8",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        688
+      ],
+      "id": "c988a480-4d54-47c0-8047-55a41d0e4764",
+      "name": "Memoria - Agente de Suporte"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        640,
+        688
+      ],
+      "id": "56ac0575-922b-4257-8147-8fb45c4be832",
+      "name": "Memoria - Agente de Assistencia 24h"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.sessionId }}",
+        "contextWindowLength": 15
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        960,
+        688
+      ],
+      "id": "812bb15e-1431-4ec1-9185-150f0b3eb542",
+      "name": "Memoria - Agente Finaceiro"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Agente Comercial": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Orquestrador",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de Suporte": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Orquestrador",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente de Assistência 24h": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Orquestrador",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Financeiro": {
+      "ai_tool": [
+        [
+          {
+            "node": "Agente Orquestrador",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agente Orquestrador": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA - Agente Comercial": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Comercial",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI - Agente de Suporte": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente de Suporte",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA - Agente de Assistência 24h": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente de Assistência 24h",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA - Agente Financeiro": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Financeiro",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA - Agente Orquestrador": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Agente Orquestrador",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memória - Agente Orquestrador": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente Orquestrador",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memoria  - Agente Comercial": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente Comercial",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Agente Orquestrador",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Agente Orquestrador",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memoria - Agente de Suporte": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente de Suporte",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memoria - Agente de Assistencia 24h": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente de Assistência 24h",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memoria - Agente Finaceiro": {
+      "ai_memory": [
+        [
+          {
+            "node": "Agente Financeiro",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "6944c9e1-48c8-4664-ba73-afa166fd8808",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6e10775aba575d41b37dfbf90d59ede5e9291db982ebebd2aa2f1a2576197638"
+  },
+  "id": "pdBjCubwiLrKYJaB",
+  "tags": []
+}
