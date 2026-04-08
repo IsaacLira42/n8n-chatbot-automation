@@ -1,5 +1,6 @@
 # 🤖 Sistema Multi-Agente de Atendimento Inteligente (n8n)
 
+![Arquitetura do Projeto](./docs/arquitetura.png)
 
 ## 🌍 Acesso ao Sistema
 
@@ -9,7 +10,6 @@
 >
 > ⚙️ Teste o fluxo completo: envio → roteamento → resposta automatizada
 
-
 ## 📌 Visão Geral
 
 Este projeto implementa um **sistema de atendimento automatizado com múltiplos agentes de IA**, construído no n8n utilizando a arquitetura LangChain. O sistema é capaz de compreender a intenção do usuário, rotear a conversa para o agente especialista correto e conduzir fluxos de negócio complexos de forma padronizada, como: vendas, suporte técnico, emergências e questões financeiras.
@@ -17,8 +17,6 @@ Este projeto implementa um **sistema de atendimento automatizado com múltiplos 
 Diferente de chatbots tradicionais baseados em palavras-chave, este sistema utiliza **Modelos de Linguagem (LLMs)** para interpretar o contexto da conversa e agir de acordo com regras de negócio rigorosamente definidas em prompts.
 
 ## 🧠 Arquitetura do Sistema
-
-![Arquitetura do Projeto](./docs/arquitetura.png)
 
 O sistema é dividido em três camadas principais:
 
