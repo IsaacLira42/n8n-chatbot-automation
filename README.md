@@ -2,6 +2,7 @@
 
 ![Arquitetura do Projeto](./docs/arquitetura.png)
 
+<!--
 ## 🌍 Acesso ao Sistema
 
 > 🧪 **Acesse e interaja com o sistema:**
@@ -9,6 +10,7 @@
 > ### 👉 https://arc-chat-assist.lovable.app/
 >
 > ⚙️ Teste o fluxo completo: envio → roteamento → resposta automatizada
+-->
 
 ## 📌 Visão Geral
 
